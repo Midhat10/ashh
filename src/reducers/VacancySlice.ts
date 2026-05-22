@@ -1,8 +1,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { fetchVacations } from "./VacationThunk";
+import { fetchVacancies } from "./VacancyThunk";
 import type { VacancyItem } from "../vite-env";
 
-type VacationsStateType = {
+type VacanciesStateType = {
   items: VacancyItem[];
   error: string | null;
   isLoading: boolean;
@@ -11,7 +11,7 @@ type VacationsStateType = {
   skill_set: string[];
 };
 
-const initialState: VacationsStateType = {
+export const initialState: VacanciesStateType = {
   items: [],
   isLoading: false,
   error: null,
@@ -20,8 +20,8 @@ const initialState: VacationsStateType = {
   skill_set: ["TypeScript", "React", "Redux"],
 };
 
-const VacationSlice = createSlice({
-  name: "vacations",
+const VacancySlice = createSlice({
+  name: "vacancies",
   initialState,
   reducers: {
     setText: (state, action: PayloadAction<string>) => {
@@ -47,15 +47,15 @@ const VacationSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(fetchVacations.pending, (state) => {
+      .addCase(fetchVacancies.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(fetchVacations.fulfilled, (state, action) => {
+      .addCase(fetchVacancies.fulfilled, (state, action) => {
         state.isLoading = false;
         state.items = action.payload;
       })
-      .addCase(fetchVacations.rejected, (state, action) => {
+      .addCase(fetchVacancies.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload || "Ошибка";
         state.items = [];
@@ -63,6 +63,5 @@ const VacationSlice = createSlice({
   },
 });
 
-export const { addSkill, removeSkill, setArea, setText } =
-  VacationSlice.actions;
-export default VacationSlice.reducer;
+export const { addSkill, removeSkill, setArea, setText } = VacancySlice.actions;
+export default VacancySlice.reducer;

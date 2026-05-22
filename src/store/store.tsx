@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import vacationReducer from "../reducers/VacationSlice";
+import vacancyReducer from "../reducers/VacancySlice";
 
 export const store = configureStore({
   reducer: {
-    vacations: vacationReducer,
+    vacancies: vacancyReducer,
   },
 });
 

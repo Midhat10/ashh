@@ -20,9 +20,9 @@ function chunk<T>(array: T[], size: number): T[][] {
   return [head, ...chunk(tail, size)];
 }
 
-function ListOfVacations() {
+function ListOfVacancies() {
   const [activePage, setPage] = useState(1);
-  const { items } = useTypedSelector((state) => state.vacations);
+  const { items } = useTypedSelector((state) => state.vacancies);
   const [prevItems, setPrevItems] = useState(items);
 
   if (items !== prevItems) {
@@ -73,4 +73,4 @@ function ListOfVacations() {
   );
 }
 
-export default ListOfVacations;
+export default ListOfVacancies;

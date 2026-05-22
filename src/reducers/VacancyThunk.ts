@@ -8,11 +8,11 @@ type SeacrParams = {
   skill_set: string[];
 };
 
-export const fetchVacations = createAsyncThunk<
+export const fetchVacancies = createAsyncThunk<
   VacancyItem[],
   SeacrParams,
   { rejectValue: string }
->("vacations/fetchVacations", async (params, { rejectWithValue }) => {
+>("vacancies/fetchVacancies", async (params, { rejectWithValue }) => {
   try {
     const { text, area, skill_set } = params;
     const data = await new Promise<VacancyItem[]>((resolve, reject) => {

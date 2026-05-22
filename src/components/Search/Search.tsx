@@ -10,7 +10,7 @@ import {
 import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
 import { useTypedDispatch } from "../../hooks/redux";
-import { setText } from "../../reducers/VacationSlice";
+import { setText } from "../../reducers/VacancySlice";
 
 function Search() {
   const [searchText, setSearchText] = useState("");

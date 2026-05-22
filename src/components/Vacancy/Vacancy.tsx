@@ -9,7 +9,12 @@ import {
 } from "@mantine/core";
 import type { VacancyItem } from "../../vite-env";
 
-function Vacancy({ vacancy }: { vacancy: VacancyItem }) {
+type VacancyProps = {
+  vacancy: VacancyItem;
+  onApply?: () => void;
+};
+
+function Vacancy({ vacancy, onApply }: VacancyProps) {
   return (
     <>
       <Stack gap={10}>
@@ -18,11 +23,19 @@ function Vacancy({ vacancy }: { vacancy: VacancyItem }) {
             {vacancy.name}
           </Title>
           <Group>
-            <Text fw={400} fz="xl">
-              {vacancy.salary_range?.from}{" "}
-              {vacancy.salary_range?.to ? "- " + vacancy.salary_range?.to : ""}{" "}
-              Р
-            </Text>
+            {vacancy.salary_range && (
+              <Text fw={400} fz="xl">
+                {vacancy.salary_range ? vacancy.salary_range.from + " " : ""}
+                {vacancy.salary_range?.to
+                  ? "- " + vacancy.salary_range?.to + " "
+                  : ""}
+                {vacancy.salary_range?.currency === "RUR"
+                  ? "Руб."
+                  : vacancy.salary_range?.currency === "USD"
+                    ? "Дол."
+                    : ""}
+              </Text>
+            )}
             <Text fw={400} fz="md" style={{ color: "gray" }}>
               {vacancy.experience.name}
             </Text>
@@ -46,12 +59,17 @@ function Vacancy({ vacancy }: { vacancy: VacancyItem }) {
             <Button variant="filled" color="var(--mantine-color-black)">
               Смотреть вакансию
             </Button>
-            <Button variant="light" color="gray">
+            <Button variant="light" color="gray" onClick={onApply}>
               <Anchor
                 href="https://hh.ru/"
                 target="_blank"
                 underline="never"
                 c="var(--mantine-color-black)"
+                onClick={(e) => {
+                  if (onApply) {
+                    e.preventDefault();
+                  }
+                }}
               >
                 Откликнуться
               </Anchor>

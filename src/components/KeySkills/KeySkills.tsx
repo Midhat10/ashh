@@ -1,12 +1,12 @@
 import { PillsInput, Badge, PillGroup, Pill, CloseButton } from "@mantine/core";
 import { useState } from "react";
 import { useTypedDispatch, useTypedSelector } from "../../hooks/redux";
-import { addSkill, removeSkill } from "../../reducers/VacationSlice";
+import { addSkill, removeSkill } from "../../reducers/VacancySlice";
 
 function KeySkills() {
   const [skillText, setSkillText] = useState("");
   const dispath = useTypedDispatch();
-  const { skill_set } = useTypedSelector((state) => state.vacations);
+  const { skill_set } = useTypedSelector((state) => state.vacancies);
   const handleAdd = () => {
     dispath(addSkill(skillText));
     setSkillText("");
