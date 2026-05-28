@@ -2,7 +2,7 @@ import { AppShell, MantineProvider } from "@mantine/core";
 import { configureStore } from "@reduxjs/toolkit";
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
-import Header from "./Header";
+import Layout from "./Layout";
 
 const createStore = () =>
   configureStore({
@@ -11,14 +11,14 @@ const createStore = () =>
     },
   });
 
-describe("render Header", () => {
+describe("render Layout", () => {
   it("should display with logo and titles", () => {
     const store = createStore();
     render(
       <Provider store={store}>
         <MantineProvider forceColorScheme="light">
           <AppShell>
-            <Header />
+            <Layout />
           </AppShell>
         </MantineProvider>
       </Provider>,

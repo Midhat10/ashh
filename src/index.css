@@ -1,0 +1,25 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --color-bg: #2c2c32;
+  --color-active: #0f7dc6;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 0;
+}
+
+.container {
+  max-width: 900px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  margin: 0 auto;
+}
+
+.active {
+  color: var(--color-active);
+  cursor: default;
+}

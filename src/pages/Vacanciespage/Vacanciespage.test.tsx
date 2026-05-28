@@ -5,7 +5,7 @@ import { MantineProvider } from "@mantine/core";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import vacancyReducer from "../../reducers/VacancySlice";
-import AppShell from "./AppShell";
+import AppShell from "./Vacanciespage";
 
 const createTestStore = (initialVacanciesState = {}) =>
   configureStore({

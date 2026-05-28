@@ -6,16 +6,18 @@ import {
   Select,
 } from "@mantine/core";
 
-import Header from "../Header/Header";
-import Search from "../Search/Search";
-import ListOfVacancies from "../ListOfVacations/ListOfVacancies";
-import KeySkills from "../KeySkills/KeySkills";
+import Search from "../../components/Search/Search";
+import ListOfVacancies from "../../components/ListOfVacations/ListOfVacancies";
+import KeySkills from "../../components/KeySkills/KeySkills";
 import { useTypedDispatch, useTypedSelector } from "../../hooks/redux";
 import { useEffect } from "react";
 import { fetchVacancies } from "../../reducers/VacancyThunk";
 import { setArea } from "../../reducers/VacancySlice";
+import { useSearchParams } from "react-router-dom";
 
-function AppShell() {
+function Vacanciespage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const dispatch = useTypedDispatch();
   const { text, area, skill_set, isLoading, error } = useTypedSelector(
     (state) => state.vacancies,
@@ -23,9 +25,9 @@ function AppShell() {
   useEffect(() => {
     dispatch(fetchVacancies({ text, area, skill_set }));
   }, [dispatch, area, skill_set, text]);
+
   return (
     <MAppShell header={{ height: 60 }}>
-      <Header />
       <MAppShell.Main>
         <Container size="70vw" p={0}>
           <Search />
@@ -68,4 +70,4 @@ function AppShell() {
   );
 }
 
-export default AppShell;
+export default Vacanciespage;
