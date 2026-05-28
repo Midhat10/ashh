@@ -17,6 +17,11 @@ import { useSearchParams } from "react-router-dom";
 
 function Vacanciespage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const queryVacancy = searchParams.get("vacancy") || "";
+  const areaVacancy = searchParams.get("area") || "";
+  const skillSetVacancy = searchParams.get("skillset") || "";
+
+  const handleSearch = () => {};
 
   const dispatch = useTypedDispatch();
   const { text, area, skill_set, isLoading, error } = useTypedSelector(
