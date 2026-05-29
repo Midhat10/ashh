@@ -3,14 +3,23 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { mockVacancy } from "../../mocks/vacancies";
 import Vacancy from "./Vacancy";
 import { MantineProvider } from "@mantine/core";
+import { BrowserRouter } from "react-router-dom";
 
 describe("render Vacancy", () => {
   const clickFn = vi.fn();
   it("we have all values for this vacancy and click on button", () => {
     render(
-      <MantineProvider forceColorScheme="light">
-        <Vacancy vacancy={mockVacancy} onApply={clickFn} />
-      </MantineProvider>,
+      <BrowserRouter
+        basename="/"
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <MantineProvider forceColorScheme="light">
+          <Vacancy vacancy={mockVacancy} onApply={clickFn} isFullPage={false} />
+        </MantineProvider>
+      </BrowserRouter>,
     );
 
     const button = screen.getByText("Откликнуться");

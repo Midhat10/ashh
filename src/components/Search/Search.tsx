@@ -11,9 +11,38 @@ import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
 import { useTypedDispatch } from "../../hooks/redux";
 import { setText } from "../../reducers/VacancySlice";
+import type { SetURLSearchParams } from "react-router-dom";
 
-function Search() {
-  const [searchText, setSearchText] = useState("");
+type SearchType = {
+  setSearchParams: SetURLSearchParams;
+  queryVacancy: string;
+  areaVacancy: string;
+  skillSetVacancy?: string;
+};
+
+function Search({
+  setSearchParams,
+  queryVacancy,
+  areaVacancy,
+  skillSetVacancy,
+}: SearchType) {
+  const [searchText, setSearchText] = useState(queryVacancy);
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(setText(searchText));
+    const form = e.currentTarget;
+    const query = form.search.value;
+    const params: {
+      vacancy?: string;
+      area?: string;
+      skillset?: string;
+    } = {};
+
+    if (query.length) params.vacancy = query;
+    if (areaVacancy) params.area = areaVacancy;
+    if (skillSetVacancy) params.skillset = skillSetVacancy;
+    setSearchParams(params);
+  };
   const dispatch = useTypedDispatch();
   return (
     <MAppShell.Section mt={24}>
@@ -23,22 +52,21 @@ function Search() {
           <Text c="dimmed">по профессии Frontend-разработчик</Text>
         </Stack>
 
-        <Group gap="xs">
-          <TextInput
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            placeholder="Должность или название компании"
-            leftSection={<IconSearch size={16} />}
-            w={350}
-          />
-          <Button
-            variant="filled"
-            color="indigo"
-            onClick={() => dispatch(setText(searchText))}
-          >
-            Найти
-          </Button>
-        </Group>
+        <form onSubmit={handleSubmit}>
+          <Group gap="xs">
+            <TextInput
+              value={searchText}
+              name="search"
+              onChange={(e) => setSearchText(e.target.value)}
+              placeholder="Должность или название компании"
+              leftSection={<IconSearch size={16} />}
+              w={350}
+            />
+            <Button type="submit" variant="filled" color="indigo">
+              Найти
+            </Button>
+          </Group>
+        </form>
       </Group>
     </MAppShell.Section>
   );
