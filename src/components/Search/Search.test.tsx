@@ -5,6 +5,8 @@ import Search from "./Search";
 import { render, screen } from "@testing-library/react";
 import vacancyReducer from "../../reducers/VacancySlice";
 import { userEvent } from "@testing-library/user-event";
+import { BrowserRouter } from "react-router-dom";
+import { describe, expect, it, vi } from "vitest";
 
 const createTestStore = () =>
   configureStore({
@@ -12,18 +14,29 @@ const createTestStore = () =>
       vacancies: vacancyReducer,
     },
   });
+
 describe("render Search", () => {
-  it("should update input value and dispatch setText action on button click", async () => {
+  it("should update input value and call setSearchParams with correct filters on button click", async () => {
     const store = createTestStore();
-    const dispatchSpy = vi.spyOn(store, "dispatch");
+    const user = userEvent.setup();
+
+    const setSearchParamsMock = vi.fn();
+
     render(
-      <Provider store={store}>
-        <MantineProvider forceColorScheme="light">
-          <AppShell>
-            <Search />
-          </AppShell>
-        </MantineProvider>
-      </Provider>,
+      <BrowserRouter basename="/">
+        <Provider store={store}>
+          <MantineProvider forceColorScheme="light">
+            <AppShell>
+              <Search
+                setSearchParams={setSearchParamsMock}
+                area=""
+                vacancy=""
+                skillset=""
+              />
+            </AppShell>
+          </MantineProvider>
+        </Provider>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText("Список вакансий")).toBeInTheDocument();
@@ -31,26 +44,22 @@ describe("render Search", () => {
       screen.getByText("по профессии Frontend-разработчик"),
     ).toBeInTheDocument();
 
-    const user = userEvent.setup();
-
     const input = screen.getByPlaceholderText(
       "Должность или название компании",
     ) as HTMLInputElement;
     const button = screen.getByRole("button", { name: "Найти" });
+
     expect(input).toBeInTheDocument();
     expect(button).toBeInTheDocument();
-
     expect(input).toHaveValue("");
 
     await user.type(input, "Frontend");
-
     expect(input).toHaveValue("Frontend");
 
     await user.click(button);
 
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: "vacancies/setText",
-      payload: "Frontend",
+    expect(setSearchParamsMock).toHaveBeenCalledWith({
+      vacancy: "Frontend",
     });
   });
 });

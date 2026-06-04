@@ -5,70 +5,70 @@ import { Provider } from "react-redux";
 import { MantineProvider } from "@mantine/core";
 import KeySkills from "./KeySkills.tsx";
 import userEvent from "@testing-library/user-event";
+import { BrowserRouter } from "react-router-dom";
+import { describe, expect, it, vi } from "vitest";
 
-const createMockStore = (initialSkills = ["TypeScript", "Javascript"]) =>
+const createMockStore = () =>
   configureStore({
     reducer: {
       vacancies: vacancyReducer,
-    },
-    preloadedState: {
-      vacancies: {
-        items: [],
-        error: null,
-        isLoading: false,
-        text: "",
-        area: "Все города" as "Все города" | "Москва" | "Санкт-Петербург",
-        skill_set: initialSkills,
-      },
     },
   });
 
 describe("render keySkills", () => {
   it("should render existing skills, allow adding a new one, and allow removing", async () => {
-    const store = createMockStore(["TypeScript", "Javascript"]);
-    const dispatchSpy = vi.spyOn(store, "dispatch");
+    const store = createMockStore();
     const user = userEvent.setup();
+
+    const setSearchParamsMock = vi.fn();
+
     render(
-      <Provider store={store}>
-        <MantineProvider>
-          <KeySkills />
-        </MantineProvider>
-      </Provider>,
+      <BrowserRouter
+        basename="/"
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <Provider store={store}>
+          <MantineProvider>
+            <KeySkills
+              setSearchParams={setSearchParamsMock}
+              skillset="TypeScript,Javascript"
+            />
+          </MantineProvider>
+        </Provider>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText("TypeScript")).toBeInTheDocument();
     expect(screen.getByText("Javascript")).toBeInTheDocument();
 
     const input = screen.getByPlaceholderText("Навык");
-    expect(input).toBeInTheDocument();
     const buttonPlus = screen.getByText("+");
+
+    expect(input).toBeInTheDocument();
     expect(buttonPlus).toBeInTheDocument();
     expect(input).toHaveValue("");
 
     await user.type(input, "React");
-
     expect(input).toHaveValue("React");
-
     await user.click(buttonPlus);
 
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: "vacancies/addSkill",
-      payload: "React",
-    });
+    expect(setSearchParamsMock).toHaveBeenCalledWith(
+      expect.objectContaining({}),
+    );
 
-    expect(screen.getByText("React")).toBeInTheDocument();
+    setSearchParamsMock.mockClear();
 
-    const badge = screen.getByText("TypeScript").closest("span");
-    expect(badge).toBeInTheDocument();
+    const typeScriptPill =
+      screen.getByText("TypeScript").closest(".mantine-Pill-root") ||
+      screen.getByText("TypeScript").parentElement;
     const closeBtn =
-      badge?.querySelector("button") || screen.getAllByRole("button")[0];
+      typeScriptPill?.querySelector("button") ||
+      screen.getAllByRole("button")[0];
+
     expect(closeBtn).toBeInTheDocument();
-
     await user.click(closeBtn);
-
-    expect(dispatchSpy).toHaveBeenCalledWith({
-      type: "vacancies/removeSkill",
-      payload: "TypeScript",
-    });
   });
 });

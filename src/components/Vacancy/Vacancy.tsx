@@ -1,20 +1,14 @@
-import {
-  Stack,
-  Title,
-  Group,
-  Badge,
-  Button,
-  Anchor,
-  Text,
-} from "@mantine/core";
+import { Link } from "react-router-dom";
+import { Stack, Title, Group, Badge, Button, Text } from "@mantine/core";
 import type { VacancyItem } from "../../vite-env";
 
 type VacancyProps = {
   vacancy: VacancyItem;
   onApply?: () => void;
+  isFullPage?: boolean;
 };
 
-function Vacancy({ vacancy, onApply }: VacancyProps) {
+function Vacancy({ vacancy, onApply, isFullPage = false }: VacancyProps) {
   return (
     <>
       <Stack gap={10}>
@@ -56,24 +50,43 @@ function Vacancy({ vacancy, onApply }: VacancyProps) {
 
         <Group justify="space-between">
           <Group gap="sm">
-            <Button variant="filled" color="var(--mantine-color-black)">
-              Смотреть вакансию
-            </Button>
-            <Button variant="light" color="gray" onClick={onApply}>
-              <Anchor
+            {isFullPage ? (
+              <Button
+                component="a"
                 href="https://hh.ru/"
                 target="_blank"
-                underline="never"
-                c="var(--mantine-color-black)"
-                onClick={(e) => {
-                  if (onApply) {
-                    e.preventDefault();
-                  }
-                }}
+                variant="filled"
+                c="var(--mantine-color-white)"
+                color="var(--mantine-color-black)"
+                onClick={onApply}
               >
-                Откликнуться
-              </Anchor>
-            </Button>
+                Откликнуться на hh.ru
+              </Button>
+            ) : (
+              <>
+                <Button
+                  component={Link}
+                  to={`/vacancies/${vacancy.id}`}
+                  variant="filled"
+                  c="var(--mantine-color-white)"
+                  color="var(--mantine-color-black)"
+                >
+                  Смотреть вакансию
+                </Button>
+
+                <Button
+                  component="a"
+                  href="https://hh.ru/"
+                  target="_blank"
+                  variant="light"
+                  color="gray"
+                  c="var(--mantine-color-black)"
+                  onClick={onApply}
+                >
+                  Откликнуться
+                </Button>
+              </>
+            )}
           </Group>
         </Group>
       </Stack>

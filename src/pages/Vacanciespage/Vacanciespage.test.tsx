@@ -1,11 +1,31 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MantineProvider } from "@mantine/core";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import vacancyReducer from "../../reducers/VacancySlice";
-import AppShell from "./AppShell";
+import AppShell from "./Vacanciespage";
+import { BrowserRouter } from "react-router-dom";
+import * as vacancyThunks from "../../reducers/VacancyThunk";
+
+// ИСПРАВЛЕНИЕ: Мокаем Thunk так, чтобы сохранить его свойства pending/fulfilled/rejected
+vi.mock("../../reducers/VacancyThunk", async (importOriginal) => {
+  const original = await importOriginal<typeof vacancyThunks>();
+
+  // Создаем мок-функцию, но копируем в неё свойства оригинального createAsyncThunk
+  const mockFetch = vi.fn(() => ({ type: "vacancies/fetch/fulfilled" }));
+
+  return {
+    ...original,
+    fetchVacancies: Object.assign(mockFetch, {
+      pending: original.fetchVacancies.pending,
+      fulfilled: original.fetchVacancies.fulfilled,
+      rejected: original.fetchVacancies.rejected,
+      typePrefix: original.fetchVacancies.typePrefix,
+    }),
+  };
+});
 
 const createTestStore = (initialVacanciesState = {}) =>
   configureStore({
@@ -27,15 +47,22 @@ const createTestStore = (initialVacanciesState = {}) =>
   });
 
 describe("Component: AppShell Integration", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    window.history.pushState({}, "", "/");
+  });
+
   it("should render successfully with all subcomponents", () => {
     const store = createTestStore();
 
     render(
-      <Provider store={store}>
-        <MantineProvider forceColorScheme="light">
-          <AppShell />
-        </MantineProvider>
-      </Provider>,
+      <BrowserRouter basename="/">
+        <Provider store={store}>
+          <MantineProvider forceColorScheme="light">
+            <AppShell />
+          </MantineProvider>
+        </Provider>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText("Список вакансий")).toBeInTheDocument();
@@ -43,17 +70,18 @@ describe("Component: AppShell Integration", () => {
     expect(screen.getByPlaceholderText("Все города")).toBeInTheDocument();
   });
 
-  it("should handle city selection and dispatch setArea action", async () => {
+  it("should handle city selection and update URL search params", async () => {
     const store = createTestStore();
-    const dispatchSpy = vi.spyOn(store, "dispatch");
     const user = userEvent.setup();
 
     render(
-      <Provider store={store}>
-        <MantineProvider forceColorScheme="light">
-          <AppShell />
-        </MantineProvider>
-      </Provider>,
+      <BrowserRouter basename="/">
+        <Provider store={store}>
+          <MantineProvider forceColorScheme="light">
+            <AppShell />
+          </MantineProvider>
+        </Provider>
+      </BrowserRouter>,
     );
 
     const selectInputElement = screen.getByPlaceholderText("Все города");
@@ -63,11 +91,9 @@ describe("Component: AppShell Integration", () => {
     const moscowOption = screen.getByText("Москва");
     await user.click(moscowOption);
 
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: "vacancies/setArea",
-        payload: "Москва",
-      }),
+    // Проверяем, что изменился URL браузера
+    expect(window.location.search).toContain(
+      "area=%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0",
     );
   });
 
@@ -77,26 +103,17 @@ describe("Component: AppShell Integration", () => {
       isLoading: false,
     });
 
-    const dispatchSpy = vi
-      .spyOn(store, "dispatch")
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .mockImplementation((action: any) => {
-        if (typeof action === "function") {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          return Promise.resolve() as any;
-        }
-
-        return store.dispatch(action);
-      });
-
+    const dispatchSpy = vi.spyOn(store, "dispatch");
     const user = userEvent.setup();
 
     render(
-      <Provider store={store}>
-        <MantineProvider forceColorScheme="light">
-          <AppShell />
-        </MantineProvider>
-      </Provider>,
+      <BrowserRouter basename="/">
+        <Provider store={store}>
+          <MantineProvider forceColorScheme="light">
+            <AppShell />
+          </MantineProvider>
+        </Provider>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText(/An error ocurred/i)).toBeInTheDocument();
@@ -108,6 +125,8 @@ describe("Component: AppShell Integration", () => {
 
     await user.click(retryButton);
 
+    // Проверяем вызовы
     expect(dispatchSpy).toHaveBeenCalled();
+    expect(vacancyThunks.fetchVacancies).toHaveBeenCalled();
   });
 });

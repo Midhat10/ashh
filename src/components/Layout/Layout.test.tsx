@@ -2,7 +2,8 @@ import { AppShell, MantineProvider } from "@mantine/core";
 import { configureStore } from "@reduxjs/toolkit";
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
-import Header from "./Header";
+import Layout from "./Layout";
+import { BrowserRouter } from "react-router-dom";
 
 const createStore = () =>
   configureStore({
@@ -11,17 +12,25 @@ const createStore = () =>
     },
   });
 
-describe("render Header", () => {
+describe("render Layout", () => {
   it("should display with logo and titles", () => {
     const store = createStore();
     render(
-      <Provider store={store}>
-        <MantineProvider forceColorScheme="light">
-          <AppShell>
-            <Header />
-          </AppShell>
-        </MantineProvider>
-      </Provider>,
+      <BrowserRouter
+        basename="/"
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <Provider store={store}>
+          <MantineProvider forceColorScheme="light">
+            <AppShell>
+              <Layout />
+            </AppShell>
+          </MantineProvider>
+        </Provider>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText(".FrontEnd")).toBeInTheDocument();

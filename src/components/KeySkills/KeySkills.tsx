@@ -1,19 +1,47 @@
 import { PillsInput, Badge, PillGroup, Pill, CloseButton } from "@mantine/core";
 import { useState } from "react";
-import { useTypedDispatch, useTypedSelector } from "../../hooks/redux";
-import { addSkill, removeSkill } from "../../reducers/VacancySlice";
+import { useSearchParams, type URLSearchParamsInit } from "react-router-dom";
+interface KeySkillsProps {
+  setSearchParams: (
+    nextInit: URLSearchParamsInit,
+    navigateOptions?: { replace?: boolean; state?: unknown },
+  ) => void;
+  skillset: string;
+}
 
-function KeySkills() {
+function KeySkills({ setSearchParams, skillset }: KeySkillsProps) {
   const [skillText, setSkillText] = useState("");
-  const dispath = useTypedDispatch();
-  const { skill_set } = useTypedSelector((state) => state.vacancies);
+  const [searchParams] = useSearchParams();
+
+  const currentSkills = skillset ? skillset.split(",") : [];
+
+  const updateUrlWithSkills = (skillsArray: string[]) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    if (skillsArray.length > 0) {
+      newParams.set("skillset", skillsArray.join(","));
+    } else {
+      newParams.delete("skillset");
+    }
+
+    setSearchParams(newParams);
+  };
+
   const handleAdd = () => {
-    dispath(addSkill(skillText));
+    const trimmedSkill = skillText.trim();
+    if (!trimmedSkill) return;
+
+    if (!currentSkills.includes(trimmedSkill)) {
+      const updatedSkills = [...currentSkills, trimmedSkill];
+      updateUrlWithSkills(updatedSkills);
+    }
+
     setSkillText("");
   };
+
   const handleRemove = (text: string) => {
-    dispath(removeSkill(text));
-    setSkillText("");
+    const updatedSkills = currentSkills.filter((skill) => skill !== text);
+    updateUrlWithSkills(updatedSkills);
   };
   return (
     <>
@@ -31,14 +59,23 @@ function KeySkills() {
           placeholder="Навык"
           value={skillText}
           onChange={(e) => setSkillText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleAdd();
+          }}
         />
       </PillsInput>
 
-      <PillGroup>
-        {skill_set.map((skill) => (
+      <PillGroup mt="sm">
+        {currentSkills.map((skill) => (
           <Pill key={skill}>
-            {skill}
-            <CloseButton size="sm" onClick={() => handleRemove(skill)} />
+            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <span>{skill}</span>
+              <CloseButton
+                size="xs"
+                variant="transparent"
+                onClick={() => handleRemove(skill)}
+              />
+            </div>
           </Pill>
         ))}
       </PillGroup>
