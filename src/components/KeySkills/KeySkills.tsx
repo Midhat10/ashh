@@ -1,50 +1,47 @@
 import { PillsInput, Badge, PillGroup, Pill, CloseButton } from "@mantine/core";
 import { useState } from "react";
-import { useTypedDispatch, useTypedSelector } from "../../hooks/redux";
-import { addSkill, removeSkill } from "../../reducers/VacancySlice";
-import type { SetURLSearchParams } from "react-router-dom";
+import { useSearchParams, type URLSearchParamsInit } from "react-router-dom";
+interface KeySkillsProps {
+  setSearchParams: (
+    nextInit: URLSearchParamsInit,
+    navigateOptions?: { replace?: boolean; state?: unknown },
+  ) => void;
+  skillset: string;
+}
 
-type SearchType = {
-  setSearchParams: SetURLSearchParams;
-  queryVacancy: string;
-  areaVacancy: string;
-  skillSetVacancy?: string;
-};
-
-function KeySkills({ setSearchParams, queryVacancy, areaVacancy }: SearchType) {
+function KeySkills({ setSearchParams, skillset }: KeySkillsProps) {
   const [skillText, setSkillText] = useState("");
-  const dispath = useTypedDispatch();
-  const { skill_set } = useTypedSelector((state) => state.vacancies);
-  const handleAdd = () => {
-    const params: {
-      vacancy?: string;
-      area?: string;
-      skillset?: string;
-    } = {};
+  const [searchParams] = useSearchParams();
 
-    if (queryVacancy.length) params.vacancy = queryVacancy;
-    if (areaVacancy) params.area = areaVacancy;
-    if (!skill_set.join().includes(skillText))
-      params.skillset = skill_set.join() + `,${skillText}`;
-    setSearchParams(params);
-    dispath(addSkill(skillText));
+  const currentSkills = skillset ? skillset.split(",") : [];
+
+  const updateUrlWithSkills = (skillsArray: string[]) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    if (skillsArray.length > 0) {
+      newParams.set("skillset", skillsArray.join(","));
+    } else {
+      newParams.delete("skillset");
+    }
+
+    setSearchParams(newParams);
+  };
+
+  const handleAdd = () => {
+    const trimmedSkill = skillText.trim();
+    if (!trimmedSkill) return;
+
+    if (!currentSkills.includes(trimmedSkill)) {
+      const updatedSkills = [...currentSkills, trimmedSkill];
+      updateUrlWithSkills(updatedSkills);
+    }
+
     setSkillText("");
   };
+
   const handleRemove = (text: string) => {
-    const params: {
-      vacancy?: string;
-      area?: string;
-      skillset?: string;
-    } = {};
-
-    if (queryVacancy.length) params.vacancy = queryVacancy;
-    if (areaVacancy) params.area = areaVacancy;
-    const data = skill_set.filter((skill) => skill !== text);
-    if (data.length) params.skillset = data.join();
-    setSearchParams(params);
-
-    dispath(removeSkill(text));
-    setSkillText("");
+    const updatedSkills = currentSkills.filter((skill) => skill !== text);
+    updateUrlWithSkills(updatedSkills);
   };
   return (
     <>
@@ -62,14 +59,23 @@ function KeySkills({ setSearchParams, queryVacancy, areaVacancy }: SearchType) {
           placeholder="Навык"
           value={skillText}
           onChange={(e) => setSkillText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleAdd();
+          }}
         />
       </PillsInput>
 
-      <PillGroup>
-        {skill_set.map((skill) => (
+      <PillGroup mt="sm">
+        {currentSkills.map((skill) => (
           <Pill key={skill}>
-            {skill}
-            <CloseButton size="sm" onClick={() => handleRemove(skill)} />
+            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <span>{skill}</span>
+              <CloseButton
+                size="xs"
+                variant="transparent"
+                onClick={() => handleRemove(skill)}
+              />
+            </div>
           </Pill>
         ))}
       </PillGroup>

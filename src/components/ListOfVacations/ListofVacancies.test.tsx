@@ -6,6 +6,7 @@ import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MantineProvider } from "@mantine/core";
 import ListOfVacancies from "./ListOfVacancies.tsx";
+import { BrowserRouter } from "react-router-dom";
 
 const generateMockVacancies = (count: number): VacancyItem[] => {
   return Array.from({ length: count }, (_, index) => ({
@@ -47,11 +48,13 @@ describe("render ListOfVacancies", () => {
     const user = userEvent.setup();
 
     render(
-      <Provider store={store}>
-        <MantineProvider forceColorScheme="light">
-          <ListOfVacancies />
-        </MantineProvider>
-      </Provider>,
+      <BrowserRouter basename="/">
+        <Provider store={store}>
+          <MantineProvider forceColorScheme="light">
+            <ListOfVacancies />
+          </MantineProvider>
+        </Provider>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText("Разработчик 1")).toBeInTheDocument();
@@ -70,11 +73,13 @@ describe("render ListOfVacancies", () => {
     const store = createMockStore(generateMockVacancies(4));
 
     render(
-      <Provider store={store}>
-        <MantineProvider forceColorScheme="light">
-          <ListOfVacancies />
-        </MantineProvider>
-      </Provider>,
+      <BrowserRouter basename="/">
+        <Provider store={store}>
+          <MantineProvider forceColorScheme="light">
+            <ListOfVacancies />
+          </MantineProvider>
+        </Provider>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText("Разработчик 1")).toBeInTheDocument();
@@ -86,11 +91,13 @@ describe("render ListOfVacancies", () => {
     const store = createMockStore([]);
 
     render(
-      <Provider store={store}>
-        <MantineProvider forceColorScheme="light">
-          <ListOfVacancies />
-        </MantineProvider>
-      </Provider>,
+      <BrowserRouter basename="/">
+        <Provider store={store}>
+          <MantineProvider forceColorScheme="light">
+            <ListOfVacancies />
+          </MantineProvider>
+        </Provider>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText("Ничего не найдено")).toBeInTheDocument();

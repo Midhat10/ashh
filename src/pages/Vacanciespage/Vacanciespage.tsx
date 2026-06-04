@@ -12,58 +12,64 @@ import KeySkills from "../../components/KeySkills/KeySkills";
 import { useTypedDispatch, useTypedSelector } from "../../hooks/redux";
 import { useEffect } from "react";
 import { fetchVacancies } from "../../reducers/VacancyThunk";
-import { setArea } from "../../reducers/VacancySlice";
 import { useSearchParams } from "react-router-dom";
+
+type AllowedAreas = "Все города" | "Москва" | "Санкт-Петербург";
 
 function Vacanciespage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const queryVacancy = searchParams.get("vacancy") || "";
-  const areaVacancy = searchParams.get("area") || "";
-  const skillSetVacancy = searchParams.get("skillset") || "";
+
+  const vacancy: string = searchParams.get("vacancy") || "";
+  const area = (searchParams.get("area") || "") as AllowedAreas;
+  const skillset: string = searchParams.get("skillset") || "";
 
   const dispatch = useTypedDispatch();
-  const { text, area, skill_set, isLoading, error } = useTypedSelector(
-    (state) => state.vacancies,
-  );
+  const { isLoading, error } = useTypedSelector((state) => state.vacancies);
   useEffect(() => {
-    dispatch(fetchVacancies({ text, area, skill_set }));
-  }, [text, area, skill_set, dispatch]);
+    const skill_set: string[] = skillset ? skillset.split(",") : [];
+
+    dispatch(fetchVacancies({ text: vacancy, area, skill_set }));
+  }, [vacancy, area, skillset, dispatch]);
+
+  const updateSearchParams = (key: string, value: string | null) => {
+    const currentParams: Record<string, string> = Object.fromEntries(
+      searchParams.entries(),
+    );
+    if (value) {
+      currentParams[key] = value;
+    } else {
+      delete currentParams[key];
+    }
+    setSearchParams(currentParams);
+  };
 
   return (
     <MAppShell header={{ height: 60 }}>
       <MAppShell.Main>
         <Container size="70vw" p={0}>
           <Search
+            area={area}
+            vacancy={vacancy}
+            skillset={skillset}
             setSearchParams={setSearchParams}
-            queryVacancy={queryVacancy}
-            areaVacancy={areaVacancy}
-            skillSetVacancy={skillSetVacancy}
           />
           <Grid gap="24px">
             <Grid.Col span={{ base: 12, md: 4, lg: 4 }}>
               <Paper>
                 <KeySkills
+                  skillset={skillset}
                   setSearchParams={setSearchParams}
-                  queryVacancy={queryVacancy}
-                  areaVacancy={areaVacancy}
-                  skillSetVacancy={skillSetVacancy}
                 />
               </Paper>
               <Paper pt="xl">
                 <Select
                   placeholder="Все города"
                   data={["Все города", "Москва", "Санкт-Петербург"]}
-                  onChange={(e) => {
-                    const params: {
-                      vacancy?: string;
-                      area?: "Все города" | "Москва" | "Санкт-Петербург";
-                      skillset?: string;
-                    } = {};
-                    if (queryVacancy) params.vacancy = queryVacancy;
-                    if (skillSetVacancy) params.skillset = skillSetVacancy;
-                    if (e) params.area = e;
-                    setSearchParams(params);
-                    dispatch(setArea(e || "Все города"));
+                  onChange={(value) => {
+                    updateSearchParams(
+                      "area",
+                      value === "Все города" ? "" : value,
+                    );
                   }}
                 />
               </Paper>
@@ -76,9 +82,12 @@ function Vacanciespage() {
                 <>
                   <p>An error ocurred:{error}</p>
                   <button
-                    onClick={() =>
-                      dispatch(fetchVacancies({ text, area, skill_set }))
-                    }
+                    onClick={() => {
+                      const skill_set = skillset ? skillset.split(",") : [];
+                      dispatch(
+                        fetchVacancies({ text: vacancy, area, skill_set }),
+                      );
+                    }}
                   >
                     Повторить загрузку
                   </button>

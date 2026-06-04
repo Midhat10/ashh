@@ -9,41 +9,29 @@ import {
 } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
-import { useTypedDispatch } from "../../hooks/redux";
-import { setText } from "../../reducers/VacancySlice";
-import type { SetURLSearchParams } from "react-router-dom";
 
-type SearchType = {
-  setSearchParams: SetURLSearchParams;
-  queryVacancy: string;
-  areaVacancy: string;
-  skillSetVacancy?: string;
-};
+interface SearchProps {
+  setSearchParams: (params: Record<string, string>) => void;
+  area: string;
+  vacancy: string;
+  skillset: string;
+}
 
-function Search({
-  setSearchParams,
-  queryVacancy,
-  areaVacancy,
-  skillSetVacancy,
-}: SearchType) {
-  const [searchText, setSearchText] = useState(queryVacancy);
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+function Search({ setSearchParams, area, vacancy, skillset }: SearchProps) {
+  const [searchText, setSearchText] = useState(vacancy);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(setText(searchText));
-    const form = e.currentTarget;
-    const query = form.search.value;
-    const params: {
-      vacancy?: string;
-      area?: string;
-      skillset?: string;
-    } = {};
 
-    if (query.length) params.vacancy = query;
-    if (areaVacancy) params.area = areaVacancy;
-    if (skillSetVacancy) params.skillset = skillSetVacancy;
+    const params: Record<string, string> = {};
+
+    if (searchText.trim()) params.vacancy = searchText.trim();
+    if (skillset) params.skillset = skillset;
+    if (area) params.area = area;
+
     setSearchParams(params);
   };
-  const dispatch = useTypedDispatch();
+
   return (
     <MAppShell.Section mt={24}>
       <Group justify="space-between" align="center" mb="xl">
@@ -52,7 +40,7 @@ function Search({
           <Text c="dimmed">по профессии Frontend-разработчик</Text>
         </Stack>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} key={vacancy}>
           <Group gap="xs">
             <TextInput
               value={searchText}
