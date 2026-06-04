@@ -1,28 +1,37 @@
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { MantineProvider } from "@mantine/core";
 import vacancyReducer from "../../reducers/VacancySlice.ts";
+import { render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MantineProvider } from "@mantine/core";
 import Vacancypage from "./Vacancypage";
 import { mockVacancy } from "../../mocks/vacancies";
-import type { VacancyItem } from "../../vite-env";
+import { describe, expect, it } from "vitest";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
-const createStoreMock = (initialState?: VacancyItem[]) =>
+type AllowedAreas = "Все города" | "Москва" | "Санкт-Петербург";
+
+const createStoreMock = (initialItems = [mockVacancy]) =>
   configureStore({
     reducer: {
       vacancies: vacancyReducer,
     },
-    preloadedState: initialState,
+    preloadedState: {
+      vacancies: {
+        items: initialItems,
+        isLoading: false,
+        error: null,
+        text: "",
+        search_field: "all",
+        area: "Все города" as AllowedAreas,
+        skill_set: [] as string[],
+      },
+    },
   });
 
-describe("render notfoundpage", () => {
+describe("Component: Vacancypage Integration", () => {
   it("renders vacancy details when item is found", () => {
-    const store = createStoreMock({
-      vacancies: {
-        items: [mockVacancy],
-      },
-    });
+    const store = createStoreMock([mockVacancy]);
+
     render(
       <MemoryRouter
         future={{
@@ -32,7 +41,7 @@ describe("render notfoundpage", () => {
         initialEntries={[`/vacancies/${mockVacancy.id}`]}
       >
         <Provider store={store}>
-          <MantineProvider>
+          <MantineProvider forceColorScheme="light">
             <Routes>
               <Route path="/vacancies/:id" element={<Vacancypage />} />
             </Routes>
@@ -40,7 +49,8 @@ describe("render notfoundpage", () => {
         </Provider>
       </MemoryRouter>,
     );
+
     expect(screen.getByText(/требования/i)).toBeInTheDocument();
-    expect(screen.getByText(/отвественность/i)).toBeInTheDocument();
+    expect(screen.getByText(/ответственность/i)).toBeInTheDocument();
   });
 });
