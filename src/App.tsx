@@ -1,9 +1,8 @@
 import { MantineProvider } from "@mantine/core";
 import Vacanciespage from "./pages/Vacanciespage/Vacanciespage";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
 import NotFoundpage from "./pages/NotFoundpage/NotFoundpage";
-import Homepage from "./pages/Homepage/Homepage";
 import Vacancypage from "./pages/Vacancypage/Vacancypage";
 import "@mantine/core/styles.css";
 function App() {
@@ -12,7 +11,7 @@ function App() {
       <MantineProvider defaultColorScheme="light">
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Homepage />} />
+            <Route index element={<Navigate to="/vacancies" replace />} />
             <Route path="vacancies" element={<Vacanciespage />} />
             <Route path="vacancies/:id" element={<Vacancypage />} />
             <Route path="*" element={<NotFoundpage />} />

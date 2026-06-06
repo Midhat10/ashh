@@ -1,8 +1,9 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { fetchVacancies } from "./VacancyThunk";
+import { fetchVacancies, fetchVacancyById } from "./VacancyThunk";
 import type { VacancyItem } from "../vite-env";
 
 type VacanciesStateType = {
+  currentVacancy: VacancyItem | null;
   items: VacancyItem[];
   error: string | null;
   isLoading: boolean;
@@ -12,6 +13,7 @@ type VacanciesStateType = {
 };
 
 export const initialState: VacanciesStateType = {
+  currentVacancy: null,
   items: [],
   isLoading: false,
   error: null,
@@ -59,6 +61,19 @@ const VacancySlice = createSlice({
         state.isLoading = false;
         state.error = action.payload || "Ошибка";
         state.items = [];
+      })
+      .addCase(fetchVacancyById.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.currentVacancy = null;
+      })
+      .addCase(fetchVacancyById.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentVacancy = action.payload;
+      })
+      .addCase(fetchVacancyById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "Произошла ошибка";
       });
   },
 });

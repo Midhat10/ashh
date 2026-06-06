@@ -1,5 +1,5 @@
+import { VACANCIES } from "./../mocks/vacancies";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { VACANCIES } from "../mocks/vacancies";
 import type { VacancyItem } from "../vite-env";
 
 type SeacrParams = {
@@ -47,6 +47,29 @@ export const fetchVacancies = createAsyncThunk<
 
         resolve(filtredItems);
       }, 1000);
+    });
+    return data;
+  } catch (error) {
+    return rejectWithValue((error as Error).message);
+  }
+});
+
+export const fetchVacancyById = createAsyncThunk<
+  VacancyItem,
+  string,
+  { rejectValue: string }
+>("vacancies/fetchVacancyById", async (id, { rejectWithValue }) => {
+  try {
+    const data = await new Promise<VacancyItem>((resolve, reject) => {
+      setTimeout(() => {
+        const foundVacancy = VACANCIES.items.find((item) => item.id === id);
+
+        if (foundVacancy) {
+          resolve(foundVacancy);
+        } else {
+          reject(new Error("Вакансия не найдена на сервере"));
+        }
+      }, 500);
     });
     return data;
   } catch (error) {

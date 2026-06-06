@@ -5,19 +5,39 @@ import { Provider } from "react-redux";
 import { MantineProvider } from "@mantine/core";
 import Vacancypage from "./Vacancypage";
 import { mockVacancy } from "../../mocks/vacancies";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import * as vacancyThunks from "../../reducers/VacancyThunk";
+
+vi.mock("../../reducers/VacancyThunk", async (importOriginal) => {
+  const original = await importOriginal<typeof vacancyThunks>();
+  const mockFetchById = vi.fn(() => ({
+    type: "vacancies/fetchVacancyById/fulfilled",
+    payload: mockVacancy,
+  }));
+
+  return {
+    ...original,
+    fetchVacancyById: Object.assign(mockFetchById, {
+      pending: original.fetchVacancyById.pending,
+      fulfilled: original.fetchVacancyById.fulfilled,
+      rejected: original.fetchVacancyById.rejected,
+      typePrefix: original.fetchVacancyById.typePrefix,
+    }),
+  };
+});
 
 type AllowedAreas = "Все города" | "Москва" | "Санкт-Петербург";
 
-const createStoreMock = (initialItems = [mockVacancy]) =>
+const createStoreMock = (initialVacancy = mockVacancy) =>
   configureStore({
     reducer: {
       vacancies: vacancyReducer,
     },
     preloadedState: {
       vacancies: {
-        items: initialItems,
+        items: [],
+        currentVacancy: initialVacancy,
         isLoading: false,
         error: null,
         text: "",
@@ -29,17 +49,11 @@ const createStoreMock = (initialItems = [mockVacancy]) =>
   });
 
 describe("Component: Vacancypage Integration", () => {
-  it("renders vacancy details when item is found", () => {
-    const store = createStoreMock([mockVacancy]);
+  it("renders vacancy details when item is found in currentVacancy state", async () => {
+    const store = createStoreMock(mockVacancy);
 
     render(
-      <MemoryRouter
-        future={{
-          v7_relativeSplatPath: true,
-          v7_startTransition: true,
-        }}
-        initialEntries={[`/vacancies/${mockVacancy.id}`]}
-      >
+      <MemoryRouter initialEntries={[`/vacancies/${mockVacancy.id}`]}>
         <Provider store={store}>
           <MantineProvider forceColorScheme="light">
             <Routes>
@@ -50,7 +64,14 @@ describe("Component: Vacancypage Integration", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText(/требования/i)).toBeInTheDocument();
-    expect(screen.getByText(/ответственность/i)).toBeInTheDocument();
+    const requirementsLabel = await screen.findByText((content) =>
+      content.toLowerCase().includes("требования"),
+    );
+    expect(requirementsLabel).toBeInTheDocument();
+
+    const responsibilityLabel = await screen.findByText((content) =>
+      content.toLowerCase().includes("ответственность"),
+    );
+    expect(responsibilityLabel).toBeInTheDocument();
   });
 });

@@ -65,6 +65,7 @@ function Vacanciespage() {
                 <Select
                   placeholder="Все города"
                   data={["Все города", "Москва", "Санкт-Петербург"]}
+                  value={area}
                   onChange={(value) => {
                     updateSearchParams(
                       "area",
