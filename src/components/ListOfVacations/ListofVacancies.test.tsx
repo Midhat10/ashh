@@ -29,6 +29,7 @@ const createMockStore = (preloadedItems: VacancyItem[]) =>
     },
     preloadedState: {
       vacancies: {
+        currentVacancy: null,
         items: preloadedItems,
         isLoading: false,
         error: null,
