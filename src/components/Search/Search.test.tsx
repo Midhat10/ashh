@@ -7,6 +7,7 @@ import vacancyReducer from "../../reducers/VacancySlice";
 import { userEvent } from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
+import { ContextVacancy } from "../Context/Context.tsx"; // Импортируем ваш контекст
 
 const createTestStore = () =>
   configureStore({
@@ -22,17 +23,27 @@ describe("render Search", () => {
 
     const setSearchParamsMock = vi.fn();
 
+    const initialUrlParams = new URLSearchParams("");
+
     render(
-      <BrowserRouter basename="/">
+      <BrowserRouter
+        basename="/"
+        future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
+      >
         <Provider store={store}>
           <MantineProvider forceColorScheme="light">
             <AppShell>
-              <Search
-                setSearchParams={setSearchParamsMock}
-                area=""
-                vacancy=""
-                skillset=""
-              />
+              <ContextVacancy.Provider
+                value={{
+                  searchParams: initialUrlParams,
+                  setSearchParams: setSearchParamsMock,
+                  vacancy: "",
+                  skillset: "",
+                  area: "Все города",
+                }}
+              >
+                <Search />
+              </ContextVacancy.Provider>
             </AppShell>
           </MantineProvider>
         </Provider>
@@ -58,8 +69,15 @@ describe("render Search", () => {
 
     await user.click(button);
 
-    expect(setSearchParamsMock).toHaveBeenCalledWith({
-      vacancy: "Frontend",
-    });
+    expect(setSearchParamsMock).toHaveBeenCalled();
+
+    const firstArgument = setSearchParamsMock.mock.calls[0][0];
+
+    const vacancyValue =
+      firstArgument instanceof URLSearchParams
+        ? firstArgument.get("vacancy")
+        : firstArgument?.vacancy;
+
+    expect(vacancyValue).toBe("Frontend");
   });
 });

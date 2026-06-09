@@ -1,17 +1,10 @@
 import { PillsInput, Badge, PillGroup, Pill, CloseButton } from "@mantine/core";
 import { useState } from "react";
-import { useSearchParams, type URLSearchParamsInit } from "react-router-dom";
-interface KeySkillsProps {
-  setSearchParams: (
-    nextInit: URLSearchParamsInit,
-    navigateOptions?: { replace?: boolean; state?: unknown },
-  ) => void;
-  skillset: string;
-}
+import { useVacancyContext } from "../Context/Context";
 
-function KeySkills({ setSearchParams, skillset }: KeySkillsProps) {
+function KeySkills() {
+  const { setSearchParams, searchParams, skillset } = useVacancyContext();
   const [skillText, setSkillText] = useState("");
-  const [searchParams] = useSearchParams();
 
   const currentSkills = skillset ? skillset.split(",") : [];
 

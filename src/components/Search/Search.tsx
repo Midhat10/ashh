@@ -8,16 +8,16 @@ import {
   Title,
 } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { ContextVacancy } from "../Context/Context";
 
-interface SearchProps {
-  setSearchParams: (params: Record<string, string>) => void;
-  area: string;
-  vacancy: string;
-  skillset: string;
-}
+function Search() {
+  const context = useContext(ContextVacancy);
+  if (!context) {
+    throw new Error("useVacancyContext must be used within a Context.Provider");
+  }
 
-function Search({ setSearchParams, area, vacancy, skillset }: SearchProps) {
+  const { setSearchParams, vacancy, skillset } = context;
   const [searchText, setSearchText] = useState(vacancy);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,8 +27,6 @@ function Search({ setSearchParams, area, vacancy, skillset }: SearchProps) {
 
     if (searchText.trim()) params.vacancy = searchText.trim();
     if (skillset) params.skillset = skillset;
-    if (area) params.area = area;
-
     setSearchParams(params);
   };
 

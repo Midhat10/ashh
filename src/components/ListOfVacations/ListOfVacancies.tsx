@@ -55,21 +55,23 @@ function ListOfVacancies() {
     </Paper>
   ));
   return (
-    <Stack gap="md">
-      {items1}
+    <>
+      <Stack gap="md">
+        {items1}
 
-      {data.length > 1 && (
-        <Group justify="center" mt="xl" mb="xl">
-          <Pagination
-            total={data.length}
-            value={activePage}
-            onChange={setPage}
-            mt="sm"
-            color="indigo"
-          />
-        </Group>
-      )}
-    </Stack>
+        {data.length > 1 && (
+          <Group justify="center" mt="xl" mb="xl">
+            <Pagination
+              total={data.length}
+              value={activePage}
+              onChange={setPage}
+              mt="sm"
+              color="indigo"
+            />
+          </Group>
+        )}
+      </Stack>
+    </>
   );
 }
 
