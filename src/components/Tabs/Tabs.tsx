@@ -1,4 +1,4 @@
-import { Tabs } from "@mantine/core";
+import { Stack, Tabs } from "@mantine/core";
 import { useContext } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { ContextVacancy } from "../Context/Context";
@@ -29,13 +29,15 @@ function TabsVacancy() {
 
   return (
     <>
-      <Tabs value={currentTab} onChange={handleTabChange}>
-        <Tabs.List>
-          <Tabs.Tab value="moscow">Москва</Tabs.Tab>
-          <Tabs.Tab value="petersburg">Санкт-Петербург</Tabs.Tab>
-        </Tabs.List>
-      </Tabs>
-      <Outlet />
+      <Stack gap="md">
+        <Tabs value={currentTab} onChange={handleTabChange}>
+          <Tabs.List>
+            <Tabs.Tab value="moscow">Москва</Tabs.Tab>
+            <Tabs.Tab value="petersburg">Санкт-Петербург</Tabs.Tab>
+          </Tabs.List>
+        </Tabs>
+        <Outlet />
+      </Stack>
     </>
   );
 }

@@ -23,7 +23,7 @@ function ShowOfListOfVacancies() {
   return (
     <div>
       {isLoading && <h2 style={{ textAlign: "center" }}>Loading...</h2>}
-      {!error && <ListOfVacancies />}
+      {!isLoading && !error && <ListOfVacancies />}
       {error && (
         <>
           <p>An error ocurred:{error}</p>

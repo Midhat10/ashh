@@ -49,7 +49,7 @@ function ListOfVacancies() {
 
   const currentPaginatedItems = data[activePage - 1] || [];
 
-  const items1 = currentPaginatedItems.map((item) => (
+  const items1 = currentPaginatedItems?.map((item) => (
     <Paper key={item.id} withBorder p="lg" radius="md" shadow="sm">
       <Vacancy vacancy={item} />
     </Paper>

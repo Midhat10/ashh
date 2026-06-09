@@ -8,11 +8,11 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
-import NotFoundpage from "./pages/NotFoundpage/NotFoundpage";
 import Vacancypage from "./pages/Vacancypage/Vacancypage";
 import "@mantine/core/styles.css";
 import ShowOfListOfVacancies from "./components/ShowOfListOfVacancies/ShowOfListOfVacancies";
 import Errorpage from "./pages/Errorpage/Errorpage";
+import Aboutpage from "./pages/Aboutpage/Aboutpage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,6 +24,7 @@ const router = createBrowserRouter(
         <Route path="petersburg" element={<ShowOfListOfVacancies />} />
       </Route>
       <Route path="vacancies/:id" element={<Vacancypage />} />
+      <Route path="about" element={<Aboutpage />} />
       {/* <Route path="*" element={<NotFoundpage />} /> */}
     </Route>,
   ),

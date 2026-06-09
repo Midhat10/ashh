@@ -7,6 +7,7 @@ import {
 } from "@mantine/core";
 import logo from "../../assets/logo.png";
 import { Link, NavLink, Outlet } from "react-router-dom";
+import style from "./Layout.module.css";
 
 function Layout() {
   return (
@@ -16,26 +17,22 @@ function Layout() {
           <Group gap={10} style={{ flex: 1 }}>
             <Image src={logo} alt="Logo of HH" h={30} w="auto" />
             <Title order={2} fz={16} fw={600} ff="Montserrat">
-              <Link to="/">.FrontEnd</Link>
+              <Link className={style.link} to="/">
+                .FrontEnd
+              </Link>
             </Title>
           </Group>
 
           <Group gap="xl">
-            <NavLink to="/vacancies">Вакансии FE</NavLink>
-            <span
-              style={{
-                fontSize: "30px",
-                color: "blue",
-                position: "relative",
-                top: "-2px",
-              }}
-            >
-              •
-            </span>
+            <NavLink className={style.link} to="/vacancies">
+              Вакансии FE
+            </NavLink>
 
             <Group gap={8} wrap="nowrap">
               <Avatar size="sm" radius="xl" color="indigo" />
-              <NavLink to="/about-me">Обо мне</NavLink>
+              <NavLink className={style.link} to="/about">
+                Обо мне
+              </NavLink>
             </Group>
           </Group>
 

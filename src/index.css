@@ -20,6 +20,26 @@ h1 {
 }
 
 .active {
+  position: relative;
   color: var(--color-active);
   cursor: default;
+  /* Добавляем небольшой отступ справа, чтобы шарик не прилипал вплотную к буквам */
+  padding-right: 14px;
+}
+
+.active::after {
+  content: "";
+  position: absolute;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background-color: var(--color-active);
+
+  top: 54%;
+  transform: translateY(-50%);
+
+  right: 0;
 }
