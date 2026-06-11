@@ -1,12 +1,11 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { MantineProvider } from "@mantine/core";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import vacancyReducer from "../../reducers/VacancySlice";
 import AppShell from "./Vacanciespage";
-import { MemoryRouter } from "react-router-dom"; // Заменили BrowserRouter на MemoryRouter
+import { MemoryRouter } from "react-router-dom";
 import * as vacancyThunks from "../../reducers/VacancyThunk";
 
 vi.mock("../../reducers/VacancyThunk", async (importOriginal) => {
