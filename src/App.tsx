@@ -13,6 +13,7 @@ import "@mantine/core/styles.css";
 import ShowOfListOfVacancies from "./components/ShowOfListOfVacancies/ShowOfListOfVacancies";
 import Errorpage from "./pages/Errorpage/Errorpage";
 import Aboutpage from "./pages/Aboutpage/Aboutpage";
+import NotFoundpage from "./pages/NotFoundpage/NotFoundpage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,7 +26,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path="vacancies/:id" element={<Vacancypage />} />
       <Route path="about" element={<Aboutpage />} />
-      {/* <Route path="*" element={<NotFoundpage />} /> */}
+      <Route path="*" element={<NotFoundpage />} />
     </Route>,
   ),
   { basename: "/ashh" },
