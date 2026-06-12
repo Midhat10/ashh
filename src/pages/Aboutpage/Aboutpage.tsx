@@ -3,7 +3,15 @@ import { Paper } from "@mantine/core";
 function Aboutpage() {
   return (
     <div>
-      <Paper withBorder p="lg" radius="md" shadow="sm">
+      <Paper
+        withBorder
+        p="lg"
+        radius="md"
+        shadow="sm"
+        w="100%"
+        maw={707}
+        mx="auto"
+      >
         <h2>Мидхат Фархутдинов</h2>
         <p>
           Привет! Я - Frontend-разработчик. Пишу приложения на React +

@@ -1,6 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { MantineProvider } from "@mantine/core";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";

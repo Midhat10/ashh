@@ -1,17 +1,24 @@
 import { render, screen } from "@testing-library/react";
 import NotFoundpage from "./NotFoundpage";
 import { BrowserRouter } from "react-router-dom";
+import { MantineProvider } from "@mantine/core";
 
 describe("render notfoundpage", () => {
-  it("do it", () => {
+  it("check of elements on this page", () => {
     render(
       <BrowserRouter
         basename="/"
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
-        <NotFoundpage />
+        <MantineProvider>
+          <NotFoundpage />
+        </MantineProvider>
       </BrowserRouter>,
     );
-    expect(screen.getByText(/page isn't found/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Такой страницы не существует/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Давайте перейдём к началу")).toBeInTheDocument();
+    expect(screen.getByText("На главную")).toBeInTheDocument();
   });
 });
